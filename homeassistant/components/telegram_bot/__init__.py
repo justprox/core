@@ -499,6 +499,7 @@ class TelegramNotificationService:
                 (text_b2, data_callback_b2), ...]
               - a string like: `/cmd1, /cmd2, /cmd3`
               - or a string like: `text_b1:/cmd1, text_b2:/cmd2`
+              - or a list of InlineKeyboardButton objects/dicts
             """
             buttons = []
             if isinstance(row_keyboard, str):
@@ -516,10 +517,15 @@ class TelegramNotificationService:
                         buttons.append(InlineKeyboardButton(label, callback_data=key))
             elif isinstance(row_keyboard, list):
                 for entry in row_keyboard:
-                    text_btn, data_btn = entry
-                    buttons.append(
-                        InlineKeyboardButton(text_btn, callback_data=data_btn)
-                    )
+                    if  isinstance(entry, tuple):
+                        text_btn, data_btn = entry
+                        buttons.append(
+                            InlineKeyboardButton(text_btn, callback_data=data_btn)
+                        )
+                    else:
+                        buttons.append(
+                            InlineKeyboardButton(**entry)
+                        )
             else:
                 raise ValueError(str(row_keyboard))
             return buttons
